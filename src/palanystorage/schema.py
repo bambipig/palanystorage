@@ -29,4 +29,5 @@ class StoredObject:
     storage_id: str
     key: str
     url: str = None
+    sha256_hash: str = None
 
