@@ -1,4 +1,6 @@
 from palanystorage.schema import StoredObject, StorageConfigSchema
+from typing import Union
+from os import PathLike
 
 
 class Dialect:
@@ -32,8 +34,13 @@ class Engine:
 
     dialect: Dialect
 
-    def __init__(self, dialect: Dialect):
+    def __init__(self, dialect: Dialect, storage_config: StorageConfigSchema):
         self.dialect = dialect
+        self._storage_config = storage_config
+
+    @property
+    def root_path(self) -> Union[str|PathLike]:
+        return self._storage_config.root_path
 
     async def ready(self, **kwargs):
         """
