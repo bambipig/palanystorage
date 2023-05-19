@@ -2,19 +2,19 @@ from palanystorage.schema import StoredObject, StorageConfigSchema
 
 
 class Dialect:
-    def __init__(self):
+    def __init__(self, storage_config: StorageConfigSchema):
         pass
 
-    async def ready(self, *args, **kwargs):
+    async def ready(self, **kwargs):
         pass
 
-    async def write_file(self,  *args, **kwargs):
+    async def write_file(self, **kwargs) -> StoredObject:
         pass
 
-    async def read_file(self,  *args, **kwargs):
+    async def read_file(self, **kwargs) -> StoredObject:
         pass
 
-    async def meta_file(self,  *args, **kwargs):
+    async def meta_file(self, **kwargs) -> StoredObject:
         pass
 
 
@@ -27,19 +27,18 @@ class Engine:
 
     dialect: Dialect
 
-    def __init__(self, dialect: Dialect, config_schema: StorageConfigSchema):
+    def __init__(self, dialect: Dialect):
         self.dialect = dialect
-        self.config_schema = config_schema
 
-    async def ready(self, *args, **kwargs):
+    async def ready(self, **kwargs):
         """
         TODO
         Ready state, can upload meta down
         :return:
         """
-        return await self.dialect.ready(*args, **kwargs)
+        return await self.dialect.ready(**kwargs)
 
-    async def write_file(self, file_path: str, key:str) -> StoredObject:
+    async def write_file(self, file_path: str, key: str, **kwargs) -> StoredObject:
         """
         TODO
         Add File
@@ -47,11 +46,29 @@ class Engine:
         :param key:
         :return:
         """
-        return await self.dialect.write_file(file_path, key)
+        kwargs['file_path'] = file_path
+        kwargs['key'] = key
+        return await self.dialect.write_file(**kwargs)
 
-    async def read_file(self, key: str):
-        return await self.dialect.ready(key)
+    async def read_file(self, key: str, **kwargs):
+        """
+        TODO
+        :param key:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        kwargs['key'] = key
+        return await self.dialect.read_file(**kwargs)
 
+    async def meta_file(self, key: str, *args, **kwargs) -> StoredObject:
+        """
+        TODO
+        :param key:
+        :param args:
+        :param kwargs:
+        :return:
+        """
 
-    async def meta_file(self, key: str) -> StoredObject:
-        return await self.dialect.meta_file(key)
+        kwargs['key'] = key
+        return await self.dialect.meta_file(**kwargs)

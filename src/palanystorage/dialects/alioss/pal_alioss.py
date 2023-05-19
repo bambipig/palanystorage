@@ -1,20 +1,57 @@
-from palanystorage.engine.base import Dialect
+from palanystorage.schema import StorageConfigSchema, StoredObject
 import oss2
 
 
-class PalAliossDialect(Dialect):
+class PalAliossDialect:
     driver = 'pal_alioss'
 
-    def __init__(self):
-        super().__init__()
-
-    def ready(self, *args, **kwargs):
+    def __init__(self, storage_config: StorageConfigSchema):
         self.auth = oss2.Auth(
-            access_key_id=access_key_id,
-            access_key_secret=access_key_secret)
+            access_key_id=storage_config.access_key,
+            access_key_secret=storage_config.access_key_secret)
         self.bucket = oss2.Bucket(
             auth=self.auth,
-            endpoint=endpoint,
-            bucket_name=self.bucket_name,
+            endpoint=storage_config.inside_endpoint,
+            bucket_name=storage_config.bucket,
         )  # type: oss2.Bucket
 
+    async def ready(self, **kwargs):
+        pass
+
+    async def write_file(self, file_path: str, key: str, **kwargs):
+        """
+        Write File
+        :param file_path:
+        :param key:
+        :param kwargs:
+        :return:
+        """
+        res = oss2.resumable_upload(self.bucket, key=key, filename=file_path)  # type: oss2.models.PutObjectResult
+        # return {'ret': {'hash': res.etag, 'key': key}, 'info': res}
+        return StoredObject(
+            key=key,
+        )
+
+    async def read_file(self, key: str, **kwargs):
+        """
+        Read File
+        :param key:
+        :param kwargs:
+        :return:
+        """
+        pass
+
+    async def meta_file(self, key: str, expires: int, **kwargs) -> StoredObject:
+        """
+        Meta file
+        :param key:
+        :param kwargs:
+        :return:
+        """
+
+        url = self.bucket.sign_url('GET', key=key, expires=expires)
+
+        return StoredObject(
+            key=key,
+            url=url,
+        )

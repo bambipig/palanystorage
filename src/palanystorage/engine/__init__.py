@@ -4,8 +4,9 @@ from palanystorage.schema import StorageConfigSchema
 
 
 async def create_engine(dialect_name:str, driver:str, storage_config: StorageConfigSchema, **kwargs) -> Engine:
-    dialect = load_plugin(dialect_name, driver)  # type: Dialect
+    dialect_class = load_plugin(dialect_name, driver)  # type: type[Dialect]
 
+    dialect = dialect_class(storage_config=storage_config)  # type: Dialect
     engine = Engine(dialect=dialect)
 
     return engine

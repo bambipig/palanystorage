@@ -16,7 +16,7 @@ class StorageConfigSchema:
     region: str = field(default_factory=str)
 
 
-
 @dataclass
 class StoredObject:
     key: str
+    url: str = None
