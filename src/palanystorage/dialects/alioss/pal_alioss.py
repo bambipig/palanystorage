@@ -55,3 +55,11 @@ class PalAliossDialect:
             key=key,
             url=url,
         )
+
+    async def delete_file(self, key: str, **kwargs) -> str:
+        res = self.bucket.batch_delete_objects([key,])
+        return res.deleted_keys[0]
+
+    async def delete_files(self, keys: list[str], **kwargs) -> list[str]:
+        res = self.bucket.batch_delete_objects(keys)
+        return res.deleted_keys

@@ -17,6 +17,11 @@ class Dialect:
     async def meta_file(self, **kwargs) -> StoredObject:
         pass
 
+    async def delete_file(self, **kwargs) -> None:
+        pass
+
+    async def delete_files(self, **kwargs) -> list[str]:
+        pass
 
 
 class Engine:
@@ -72,3 +77,11 @@ class Engine:
 
         kwargs['key'] = key
         return await self.dialect.meta_file(**kwargs)
+
+    async def delete_file(self, key: str, **kwargs):
+        kwargs['key'] = key
+        return await self.dialect.delete_file(**kwargs)
+
+    async def delete_files(self, keys: list[str], **kwargs):
+        kwargs['keys'] = keys
+        return await self.dialect.delete_files(**kwargs)
