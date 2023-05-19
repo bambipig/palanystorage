@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from dataclasses import field
+from palanystorage.const import DialectNames
 
 
 @dataclass
@@ -14,6 +15,13 @@ class StorageConfigSchema:
     inside_endpoint: str = field(default_factory=str)
     outside_endpoint: str = field(default_factory=str)
     region: str = field(default_factory=str)
+
+    @property
+    def storage_id(self) -> str:
+        if self.dialect in [DialectNames.alioss.name]:
+            return f'{self.dialect}:{self.bucket}'
+        else:
+            return ''
 
 
 @dataclass
