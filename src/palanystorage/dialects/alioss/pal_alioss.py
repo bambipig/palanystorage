@@ -6,6 +6,7 @@ class PalAliossDialect:
     driver = 'pal_alioss'
 
     def __init__(self, storage_config: StorageConfigSchema):
+        self.storage_config = storage_config
         self.auth = oss2.Auth(
             access_key_id=storage_config.access_key,
             access_key_secret=storage_config.access_key_secret)
@@ -18,6 +19,7 @@ class PalAliossDialect:
     async def ready(self, **kwargs):
         pass
 
+
     async def write_file(self, file_path: str, key: str, **kwargs):
         """
         Write File
@@ -29,6 +31,7 @@ class PalAliossDialect:
         res = oss2.resumable_upload(self.bucket, key=key, filename=file_path)  # type: oss2.models.PutObjectResult
         # return {'ret': {'hash': res.etag, 'key': key}, 'info': res}
         return StoredObject(
+            storage_id=self.storage_config.storage_id,
             key=key,
         )
 
@@ -52,6 +55,7 @@ class PalAliossDialect:
         url = self.bucket.sign_url('GET', key=key, expires=expires)
 
         return StoredObject(
+            storage_id=self.storage_config.storage_id,
             key=key,
             url=url,
         )

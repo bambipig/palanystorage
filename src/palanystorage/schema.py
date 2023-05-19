@@ -26,5 +26,7 @@ class StorageConfigSchema:
 
 @dataclass
 class StoredObject:
+    storage_id: str
     key: str
     url: str = None
+
