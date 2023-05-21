@@ -25,6 +25,8 @@ class Dialect:
     async def delete_files(self, **kwargs) -> list[str]:
         pass
 
+    async def head_file(self, **kwargs):
+        pass
 
 class Engine:
     """
@@ -73,7 +75,7 @@ class Engine:
         kwargs['key'] = key
         return await self.dialect.read_file(**kwargs)
 
-    async def meta_file(self, key: str, *args, **kwargs) -> StoredObject:
+    async def meta_file(self, key: str, expires: int, **kwargs) -> StoredObject:
         """
         TODO
         :param key:
@@ -83,6 +85,7 @@ class Engine:
         """
 
         kwargs['key'] = key
+        kwargs['expires'] = expires
         return await self.dialect.meta_file(**kwargs)
 
     async def delete_file(self, key: str, **kwargs):
@@ -92,3 +95,7 @@ class Engine:
     async def delete_files(self, keys: list[str], **kwargs):
         kwargs['keys'] = keys
         return await self.dialect.delete_files(**kwargs)
+
+    async def head_file(self, key: str, **kwargs):
+        kwargs['key'] = key
+        return await self.dialect.head_file(**kwargs)
