@@ -16,6 +16,7 @@ if __name__ == "__main__":
             packages=['palanystorage'],
             install_requires=[
                 'oss2==2.17.0',
+                'qiniu==7.10.0',
             ],
         )
     except:  # noqa

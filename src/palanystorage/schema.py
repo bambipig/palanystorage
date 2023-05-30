@@ -18,10 +18,7 @@ class StorageConfigSchema:
 
     @property
     def storage_id(self) -> str:
-        if self.dialect in [DialectNames.alioss.name]:
-            return f'{self.dialect}:{self.bucket}'
-        else:
-            return ''
+        return f'{self.dialect}:{self.bucket}'
 
 
 @dataclass
