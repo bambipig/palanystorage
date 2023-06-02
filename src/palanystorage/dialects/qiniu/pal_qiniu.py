@@ -1,5 +1,7 @@
-from palanystorage.schema import StorageConfigSchema, StoredObject
-from typing import Union
+import traceback
+
+from palanystorage.schema import StorageConfigSchema, StoredObject, WriteProgressSchema
+from typing import Union, Callable
 from qiniu import Auth, BucketManager, put_file, build_batch_delete
 from palanystorage.exceptions import WriteFileFailed, DeleteFileFailed
 
@@ -20,18 +22,25 @@ class PalQiniuDialect:
     async def ready(self, **kwargs):
         pass
 
-    async def write_file(self, file_path: str, key: str, **kwargs):
+    def write_progress_maker(self, wrote_bytes: int, total_bytes: int, **kwargs) -> WriteProgressSchema:
+        return WriteProgressSchema(wrote_bytes=wrote_bytes, total_bytes=total_bytes)
+
+    async def write_file(self, file_path: str, key: str, progress_callback: Callable, **kwargs):
         """
         Write File
         :param file_path:
         :param key:
+        :param progress_callback:
         :param kwargs:
         :return:
         """
         token = self.get_upload_token(key, 300)
+        print('progress_callback', progress_callback)
         try:
-            put_file(token, key, file_path)
+            put_file(token, key, file_path, progress_handler=progress_callback)
         except Exception as e:
+            print(e)
+            print(traceback.format_exc())
             raise WriteFileFailed(eid=WriteFileFailed.Eid.storage_upload_failed)
 
         return StoredObject(

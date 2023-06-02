@@ -1,6 +1,6 @@
-from palanystorage.schema import StorageConfigSchema, StoredObject
+from palanystorage.schema import StorageConfigSchema, StoredObject, WriteProgressSchema
 import oss2
-from typing import Union
+from typing import Union, Callable
 
 
 class PalAliossDialect:
@@ -20,16 +20,23 @@ class PalAliossDialect:
     async def ready(self, **kwargs):
         pass
 
+    def write_progress_maker(self, wrote_bytes: int, total_bytes: int, **kwargs) -> WriteProgressSchema:
+        return WriteProgressSchema(wrote_bytes=wrote_bytes, total_bytes=total_bytes)
 
-    async def write_file(self, file_path: str, key: str, **kwargs):
+    async def write_file(self,
+                         file_path: str,
+                         key: str,
+                         progress_callback: Union[Callable] = None, **kwargs):
         """
         Write File
         :param file_path:
         :param key:
+        :param progress_callback:
         :param kwargs:
         :return:
         """
-        res = oss2.resumable_upload(self.bucket, key=key, filename=file_path)  # type: oss2.models.PutObjectResult
+
+        res = oss2.resumable_upload(self.bucket, key=key, filename=file_path, progress_callback=progress_callback)  # type: oss2.models.PutObjectResult
         # return {'ret': {'hash': res.etag, 'key': key}, 'info': res}
         return StoredObject(
             storage_id=self.storage_config.storage_id,

@@ -22,6 +22,12 @@ class StorageConfigSchema:
 
 
 @dataclass
+class WriteProgressSchema:
+    wrote_bytes: int
+    total_bytes: int = None
+
+
+@dataclass
 class StoredObject:
     storage_id: str
     key: str

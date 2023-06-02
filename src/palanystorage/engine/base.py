@@ -1,5 +1,5 @@
-from palanystorage.schema import StoredObject, StorageConfigSchema
-from typing import Union
+from palanystorage.schema import StoredObject, StorageConfigSchema, WriteProgressSchema
+from typing import Union, Callable
 from os import PathLike
 
 
@@ -8,6 +8,9 @@ class Dialect:
         pass
 
     async def ready(self, **kwargs):
+        pass
+
+    def write_progress_maker(self, **kwargs) -> WriteProgressSchema:
         pass
 
     async def write_file(self, **kwargs) -> StoredObject:
@@ -52,16 +55,27 @@ class Engine:
         """
         return await self.dialect.ready(**kwargs)
 
-    async def write_file(self, file_path: str, key: str, **kwargs) -> StoredObject:
+    def write_progress_maker(self, *args, **kwargs) -> WriteProgressSchema:
+        return self.dialect.write_progress_maker(*args, **kwargs)
+
+    def progress_callback_wrapper(self, outside_progress_callback: Callable):
+        def _progress_callback(*args, **kwargs):
+            write_progress_schema = self.write_progress_maker(*args, **kwargs)
+            outside_progress_callback(write_progress_schema)
+        return _progress_callback
+
+    async def write_file(self, file_path: str, key: str, outside_progress_callback: Union[Callable] = None, **kwargs) -> StoredObject:
         """
         TODO
         Add File
         :param file_path:
         :param key:
+        :param outside_progress_callback:
         :return:
         """
         kwargs['file_path'] = file_path
         kwargs['key'] = key
+        kwargs['progress_callback'] = self.progress_callback_wrapper(outside_progress_callback)
         return await self.dialect.write_file(**kwargs)
 
     async def read_file(self, key: str, **kwargs):
