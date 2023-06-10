@@ -17,6 +17,8 @@ if __name__ == "__main__":
             install_requires=[
                 'oss2==2.17.0',
                 'qiniu==7.10.0',
+                'typer==0.9.0',
+                'anyconfig==0.13.0',
             ],
         )
     except:  # noqa
