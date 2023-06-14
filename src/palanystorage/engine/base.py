@@ -64,7 +64,12 @@ class Engine:
             outside_progress_callback(write_progress_schema)
         return _progress_callback
 
-    async def write_file(self, file_path: str, key: str, outside_progress_callback: Union[Callable] = None, **kwargs) -> StoredObject:
+    async def write_file(
+        self,
+        file_path: str,
+        key: str,
+        outside_progress_callback: Union[Callable] = None,
+        **kwargs) -> StoredObject:
         """
         TODO
         Add File
@@ -73,6 +78,9 @@ class Engine:
         :param outside_progress_callback:
         :return:
         """
+        if outside_progress_callback is None:
+            outside_progress_callback = lambda *a, **kw: None
+
         kwargs['file_path'] = file_path
         kwargs['key'] = key
         kwargs['progress_callback'] = self.progress_callback_wrapper(outside_progress_callback)
