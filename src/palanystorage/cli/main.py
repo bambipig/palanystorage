@@ -12,6 +12,33 @@ app = typer.Typer(name='palas')
 loop = asyncio.get_event_loop()
 
 
+@app.command('shell')
+def shell(
+    as_config_file: str,
+):
+    from traitlets.config import Config
+    c = Config()
+    c.InteractiveShellApp.exec_lines = [
+        # 'print("\\nimporting some things\\n")',
+        # 'import math',
+        # "math"
+        'import os',
+        'import anyconfig',
+        'from palanystorage.engine import create_engine',
+        'from palanystorage.schema import StorageConfigSchema',
+        f'config_info = anyconfig.load("{as_config_file}")',
+        f'storage_config = StorageConfigSchema(**config_info)',
+    ]
+    c.InteractiveShell.colors = 'LightBG'
+    c.InteractiveShell.confirm_exit = False
+    c.TerminalIPythonApp.display_banner = False
+
+    # Now we start ipython with our configuration
+    import IPython
+    IPython.start_ipython(config=c)
+
+
+
 async def _upload(
     src_dir: str,
     key_prefix: str,

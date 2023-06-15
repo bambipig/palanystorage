@@ -25,3 +25,8 @@ class WriteFileFailed(BaseException):
 class DeleteFileFailed(BaseException):
     class Eid(Enum):
         storage_delete_failed = 'storage delete failed'
+
+
+class HeadFileFailed(BaseException):
+    class Eid(Enum):
+        head_file_failed = 'head file failed'
