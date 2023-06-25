@@ -35,7 +35,7 @@ class PalQiniuDialect:
         :return:
         """
         token = self.get_upload_token(key, 300)
-        print('progress_callback', progress_callback)
+        # print('progress_callback', progress_callback)
         try:
             put_file(token, key, file_path, progress_handler=progress_callback)
         except Exception as e:
