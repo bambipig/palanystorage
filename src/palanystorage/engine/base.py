@@ -55,12 +55,12 @@ class Engine:
         """
         return await self.dialect.ready(**kwargs)
 
-    def write_progress_maker(self, *args, **kwargs) -> WriteProgressSchema:
-        return self.dialect.write_progress_maker(*args, **kwargs)
+    def write_progress_maker(self, **kwargs) -> WriteProgressSchema:
+        return self.dialect.write_progress_maker(**kwargs)
 
-    def progress_callback_wrapper(self, outside_progress_callback: Callable):
+    def progress_callback_wrapper(self, outside_progress_callback: Callable, extra: dict):
         def _progress_callback(*args, **kwargs):
-            write_progress_schema = self.write_progress_maker(*args, **kwargs)
+            write_progress_schema = self.write_progress_maker(extra=extra, **kwargs)
             outside_progress_callback(write_progress_schema)
         return _progress_callback
 
@@ -83,7 +83,7 @@ class Engine:
 
         kwargs['file_path'] = file_path
         kwargs['key'] = key
-        kwargs['progress_callback'] = self.progress_callback_wrapper(outside_progress_callback)
+        kwargs['progress_callback'] = self.progress_callback_wrapper(outside_progress_callback, extra=kwargs)
         return await self.dialect.write_file(**kwargs)
 
     async def read_file(self, key: str, **kwargs):

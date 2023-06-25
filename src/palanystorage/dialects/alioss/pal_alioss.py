@@ -21,7 +21,13 @@ class PalAliossDialect:
         pass
 
     def write_progress_maker(self, wrote_bytes: int, total_bytes: int, **kwargs) -> WriteProgressSchema:
-        return WriteProgressSchema(wrote_bytes=wrote_bytes, total_bytes=total_bytes)
+        extra = kwargs['extra']
+        key = extra['key']
+        return WriteProgressSchema(
+            storage_id=self.storage_config.storage_id,
+            key=key,
+            wrote_bytes=wrote_bytes, total_bytes=total_bytes
+        )
 
     async def write_file(self,
                          file_path: str,
