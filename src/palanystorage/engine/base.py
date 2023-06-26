@@ -1,34 +1,35 @@
 from palanystorage.schema import StoredObject, StorageConfigSchema, WriteProgressSchema
 from typing import Union, Callable
 from os import PathLike
+from palanystorage.log import logger
 
 
 class Dialect:
     def __init__(self, storage_config: StorageConfigSchema):
         pass
 
-    async def ready(self, **kwargs):
+    async def ready(self, *args, **kwargs):
         pass
 
-    def write_progress_maker(self, **kwargs) -> WriteProgressSchema:
+    def write_progress_maker(self, *args, **kwargs) -> WriteProgressSchema:
         pass
 
-    async def write_file(self, **kwargs) -> StoredObject:
+    async def write_file(self, *args, **kwargs) -> StoredObject:
         pass
 
-    async def read_file(self, **kwargs) -> StoredObject:
+    async def read_file(self, *args, **kwargs) -> StoredObject:
         pass
 
-    async def meta_file(self, **kwargs) -> StoredObject:
+    async def meta_file(self, *args, **kwargs) -> StoredObject:
         pass
 
-    async def delete_file(self, **kwargs) -> None:
+    async def delete_file(self, *args, **kwargs) -> None:
         pass
 
-    async def delete_files(self, **kwargs) -> list[str]:
+    async def delete_files(self, *args, **kwargs) -> list[str]:
         pass
 
-    async def head_file(self, **kwargs):
+    async def head_file(self, *args, **kwargs):
         pass
 
 class Engine:
@@ -55,12 +56,13 @@ class Engine:
         """
         return await self.dialect.ready(**kwargs)
 
-    def write_progress_maker(self, **kwargs) -> WriteProgressSchema:
-        return self.dialect.write_progress_maker(**kwargs)
+    def write_progress_maker(self, *args, **kwargs) -> WriteProgressSchema:
+        return self.dialect.write_progress_maker(*args, **kwargs)
 
     def progress_callback_wrapper(self, outside_progress_callback: Callable, extra: dict):
         def _progress_callback(*args, **kwargs):
-            write_progress_schema = self.write_progress_maker(extra=extra, **kwargs)
+            kwargs['extra'] = extra
+            write_progress_schema = self.write_progress_maker(*args, **kwargs)
             outside_progress_callback(write_progress_schema)
         return _progress_callback
 
@@ -81,6 +83,7 @@ class Engine:
         if outside_progress_callback is None:
             outside_progress_callback = lambda *a, **kw: None
 
+        logger.info(f'Storage Writer Received ProgressCallback: <{outside_progress_callback}>')
         kwargs['file_path'] = file_path
         kwargs['key'] = key
         kwargs['progress_callback'] = self.progress_callback_wrapper(outside_progress_callback, extra=kwargs)
