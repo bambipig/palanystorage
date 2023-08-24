@@ -34,8 +34,8 @@ def shell(
     c.TerminalIPythonApp.display_banner = False
 
     # Now we start ipython with our configuration
-    import IPython
-    IPython.start_ipython(config=c)
+    from IPython import start_ipython
+    start_ipython(argv=[], config=c)
 
 
 
