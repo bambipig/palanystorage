@@ -64,7 +64,7 @@ async def _upload(
             key = f'{key_prefix}{key}'
             print(f_path)
             print(key)
-            await engine.write_file(f_path, key)
+            await engine.write_file(f_path.__str__(), key)
 
 
 

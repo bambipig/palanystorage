@@ -35,4 +35,3 @@ class StoredObject:
     key: str
     url: str = None
     sha256_hash: str = None
-
