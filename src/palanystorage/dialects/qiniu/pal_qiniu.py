@@ -1,7 +1,7 @@
 import traceback
 
 from palanystorage.schema import StorageConfigSchema, StoredObject, WriteProgressSchema
-from typing import Union, Callable, Optional, AnyStr, List
+from typing import Union, Callable, Optional, AnyStr, List, Dict, Any
 from qiniu import Auth, BucketManager, put_file, build_batch_delete
 from palanystorage.exceptions import WriteFileFailed, DeleteFileFailed
 
@@ -15,7 +15,7 @@ class PalQiniuDialect:
         self.q = Auth(storage_config.access_key, storage_config.access_key_secret)
         self.bucket_mgr = BucketManager(self.q)  # type: BucketManager
 
-    def get_upload_token(self, key, expires, policy=None):
+    def get_upload_token(self, key, expires, policy: Optional[Dict]=None):
         token = self.q.upload_token(self.bucket_name, key, expires, policy)
         return token
 
@@ -127,3 +127,15 @@ class PalQiniuDialect:
             storage_id=self.storage_config.storage_id,
             key=key,
         )
+
+    async def retrieve_upload_token(
+            self, key: AnyStr, expires: int, policy: Optional[Dict] = None, **kwargs) -> Dict[str, Any]:
+        return self.retrieve_upload_token_sync(key, expires, policy, **kwargs)
+
+    def retrieve_upload_token_sync(self, key: str, expires: int, policy: Optional[Dict] = None, **kwargs):
+        token = self.get_upload_token(key, expires, policy)
+        return {
+            'token': token,
+            'region': self.storage_config.region,
+            'upload_url': self.storage_config.upload_url,
+        }

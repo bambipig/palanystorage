@@ -53,6 +53,12 @@ class Dialect:
     def head_file_sync(self, *args, **kwargs):
         pass
 
+    async def retrieve_upload_token(self):
+        pass
+
+    def retrieve_upload_token_sync(self, *args, **kwargs):
+        pass
+
 
 class Engine:
     """
@@ -177,3 +183,10 @@ class Engine:
     def head_file_sync(self, key: str, **kwargs):
         kwargs['key'] = key
         return self.dialect.head_file_sync(**kwargs)
+
+    async def retrieve_upload_token(self, key: AnyStr, **kwargs):
+        return self.retrieve_upload_token_sync(key=key, **kwargs)
+
+    def retrieve_upload_token_sync(self, key: str, **kwargs):
+        kwargs['key'] = key
+        return self.dialect.retrieve_upload_token_sync(**kwargs)

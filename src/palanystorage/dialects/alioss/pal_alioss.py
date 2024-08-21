@@ -117,3 +117,9 @@ class PalAliossDialect:
             storage_id=self.storage_config.storage_id,
             key=key,
         )
+
+    async def retrieve_upload_token(self, key: AnyStr, **kwargs):
+        raise NotImplemented
+
+    def retrieve_upload_token_sync(self, key: str, **kwargs):
+        raise NotImplemented
