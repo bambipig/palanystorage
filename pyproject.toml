@@ -1,9 +1,34 @@
 [build-system]
 # AVOID CHANGING REQUIRES: IT WILL BE UPDATED BY PYSCAFFOLD!
-requires = ["setuptools>=46.1.0", "setuptools_scm[toml]>=5"]
-build-backend = "setuptools.build_meta"
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
 
-[tool.setuptools_scm]
-# For smarter version schemes and other configuration options,
-# check out https://github.com/pypa/setuptools_scm
-version_scheme = "no-guess-dev"
+#[tool.setuptools_scm]
+## For smarter version schemes and other configuration options,
+## check out https://github.com/pypa/setuptools_scm
+#version_scheme = "no_guess_dev"
+##version_file = "palanystorage/_version.py"
+
+[project]
+dynamic = ["version"]
+#version = "1.2.0"
+requires-python = ">= 3.6"
+name = "palanystorage"
+dependencies = [
+    "oss2==2.17.0",
+    'qiniu==7.10.0',
+    'cos-python-sdk-v5==1.9.24',
+    'loguru==0.6.0',
+    'typer==0.9.0',
+    'anyconfig==0.13.0',
+    'dataclasses==0.8',
+]
+authors = [
+    {name = "Tiny Twist", email = "tiny.mahua@gmail.com"},
+]
+maintainers = [
+  {name = "Tiny Twist", email = "tiny.mahua@gmail.com"}
+]
+description = "A storage lib"
+[project.scripts]
+payanystorage = "palanystorage.cli.main:app"

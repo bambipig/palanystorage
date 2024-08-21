@@ -11,7 +11,8 @@ from setuptools import setup
 if __name__ == "__main__":
     try:
         setup(
-            use_scm_version={"version_scheme": "no-guess-dev"},
+            # use_scm_version={"version_scheme": "no-guess-dev"},
+            # version="0.1.0",
             name='palanystorage',
             packages=['palanystorage'],
             install_requires=[
