@@ -32,3 +32,6 @@ maintainers = [
 description = "A storage lib"
 [project.scripts]
 payanystorage = "palanystorage.cli.main:app"
+
+[project.urls]
+Home = "https://github.com/bambipig/palanystorage"
