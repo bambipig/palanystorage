@@ -1,5 +1,5 @@
 from palanystorage.schema import StoredObject, StorageConfigSchema, WriteProgressSchema
-from typing import Union, Callable
+from typing import Union, Callable, List, AnyStr, TypeVar
 from os import PathLike
 from palanystorage.log import logger
 
@@ -26,7 +26,7 @@ class Dialect:
     async def delete_file(self, *args, **kwargs) -> None:
         pass
 
-    async def delete_files(self, *args, **kwargs) -> list[str]:
+    async def delete_files(self, *args, **kwargs) -> List[AnyStr]:
         pass
 
     async def head_file(self, *args, **kwargs):
@@ -45,7 +45,7 @@ class Engine:
         self._storage_config = storage_config
 
     @property
-    def root_path(self) -> Union[str|PathLike]:
+    def root_path(self) -> AnyStr:
         return self._storage_config.root_path
 
     async def ready(self, **kwargs):
@@ -117,7 +117,7 @@ class Engine:
         kwargs['key'] = key
         return await self.dialect.delete_file(**kwargs)
 
-    async def delete_files(self, keys: list[str], **kwargs):
+    async def delete_files(self, keys: List[AnyStr], **kwargs):
         kwargs['keys'] = keys
         return await self.dialect.delete_files(**kwargs)
 

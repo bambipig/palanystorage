@@ -1,6 +1,6 @@
 from palanystorage.schema import StorageConfigSchema, StoredObject, WriteProgressSchema
 import oss2
-from typing import Union, Callable
+from typing import Union, Callable, AnyStr, Optional, List
 from qcloud_cos import CosConfig
 from qcloud_cos import CosS3Client
 import sys
@@ -108,7 +108,7 @@ class PalTxcosDialect:
         res = self.client.delete_objects([key,])
         return res.get('Deleted', [])[0]
 
-    async def delete_files(self, keys: list[str], **kwargs) -> list[str]:
+    async def delete_files(self, keys: List[AnyStr], **kwargs) -> List[AnyStr]:
 
         res = self.client.delete_objects(
             Bucket=self.bucket_name,
@@ -116,7 +116,7 @@ class PalTxcosDialect:
         )
         return res.get('Deleted', [])
 
-    async def head_file(self, key: str, **kwargs) -> Union[StoredObject|None]:
+    async def head_file(self, key: str, **kwargs) -> Optional[StoredObject]:
         try:
             res = self.client.head_object(
                 Bucket=self.bucket_name,

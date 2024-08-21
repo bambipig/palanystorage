@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from dataclasses import field
-from palanystorage.const import DialectNames
+
 
 
 @dataclass

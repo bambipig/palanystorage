@@ -21,6 +21,7 @@ if __name__ == "__main__":
                 'loguru==0.6.0',
                 'typer==0.9.0',
                 'anyconfig==0.13.0',
+                'dataclasses==0.8',
             ],
         )
     except:  # noqa

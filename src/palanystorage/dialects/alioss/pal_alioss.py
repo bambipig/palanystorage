@@ -1,6 +1,6 @@
 from palanystorage.schema import StorageConfigSchema, StoredObject, WriteProgressSchema
 import oss2
-from typing import Union, Callable
+from typing import Union, Callable, List, AnyStr, Optional
 
 
 class PalAliossDialect:
@@ -78,11 +78,11 @@ class PalAliossDialect:
         res = self.bucket.batch_delete_objects([key,])
         return res.deleted_keys[0]
 
-    async def delete_files(self, keys: list[str], **kwargs) -> list[str]:
+    async def delete_files(self, keys: [str], **kwargs) -> List[AnyStr]:
         res = self.bucket.batch_delete_objects(keys)
         return res.deleted_keys
 
-    async def head_file(self, key: str, **kwargs) -> Union[StoredObject|None]:
+    async def head_file(self, key: str, **kwargs) -> Optional[StoredObject]:
         try:
             res = self.bucket.head_object(key)
         except oss2.exceptions.NotFound as _:

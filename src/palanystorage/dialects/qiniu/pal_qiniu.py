@@ -1,7 +1,7 @@
 import traceback
 
 from palanystorage.schema import StorageConfigSchema, StoredObject, WriteProgressSchema
-from typing import Union, Callable
+from typing import Union, Callable, Optional, AnyStr, List
 from qiniu import Auth, BucketManager, put_file, build_batch_delete
 from palanystorage.exceptions import WriteFileFailed, DeleteFileFailed
 
@@ -88,7 +88,7 @@ class PalQiniuDialect:
         await self.delete_files([key])
         return key
 
-    async def delete_files(self, keys: list[str], **kwargs) -> list[str]:
+    async def delete_files(self, keys: List[AnyStr], **kwargs) -> List[AnyStr]:
         ops = build_batch_delete(self.bucket_name, keys)
         try:
             ret, info = self.bucket_mgr.batch(ops)
@@ -96,7 +96,7 @@ class PalQiniuDialect:
             raise DeleteFileFailed(eid=DeleteFileFailed.Eid.storage_delete_failed)
         return keys
 
-    async def head_file(self, key: str, **kwargs) -> Union[StoredObject|None]:
+    async def head_file(self, key: str, **kwargs) -> Optional[StoredObject]:
         ret, _ = self.bucket_mgr.stat(self.bucket_name, key)
 
         if ret is None:
