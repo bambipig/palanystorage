@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from dataclasses import field
 
 
-
 @dataclass
 class StorageConfigSchema:
     dialect: str
@@ -15,6 +14,7 @@ class StorageConfigSchema:
     inside_endpoint: str = field(default_factory=str)
     outside_endpoint: str = field(default_factory=str)
     region: str = field(default_factory=str)
+    upload_url: str = field(default_factory=str)
 
     @property
     def storage_id(self) -> str:
