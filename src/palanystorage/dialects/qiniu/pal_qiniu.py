@@ -20,6 +20,9 @@ class PalQiniuDialect:
         return token
 
     async def ready(self, **kwargs):
+        return self.ready_sync(**kwargs)
+
+    def ready_sync(self, **kwargs):
         pass
 
     def write_progress_maker(self, wrote_bytes: int, total_bytes: int, **kwargs) -> WriteProgressSchema:
@@ -31,7 +34,10 @@ class PalQiniuDialect:
             wrote_bytes=wrote_bytes, total_bytes=total_bytes
         )
 
-    async def write_file(self, file_path: str, key: str, progress_callback: Callable, **kwargs):
+    async def write_file(self, file_path: AnyStr, key: AnyStr, progress: Callable, **kwargs) -> StoredObject:
+        return self.write_file_sync(file_path, key, progress, **kwargs)
+
+    def write_file_sync(self, file_path: str, key: str, progress_callback: Callable, **kwargs):
         """
         Write File
         :param file_path:
@@ -54,7 +60,10 @@ class PalQiniuDialect:
             key=key,
         )
 
-    async def read_file(self, key: str, **kwargs):
+    async def read_file(self, key: AnyStr, **kwargs):
+        return self.read_file_sync(key, **kwargs)
+
+    def read_file_sync(self, key: str, **kwargs):
         """
         Read File
         :param key:
@@ -63,7 +72,10 @@ class PalQiniuDialect:
         """
         pass
 
-    async def meta_file(self, key: str, expires: int, **kwargs) -> StoredObject:
+    async def meta_file(self, key: AnyStr, expires: int, **kwargs) -> StoredObject:
+        return self.meta_file_sync(key, expires, **kwargs)
+
+    def meta_file_sync(self, key: str, expires: int, **kwargs) -> StoredObject:
         """
         Meta file
         :param key:
@@ -84,11 +96,17 @@ class PalQiniuDialect:
             url=url,
         )
 
-    async def delete_file(self, key: str, **kwargs) -> str:
-        await self.delete_files([key])
+    async def delete_file(self, key: AnyStr, **kwargs) -> AnyStr:
+        return self.delete_file_sync(key, **kwargs)
+
+    def delete_file_sync(self, key: str, **kwargs) -> str:
+        self.delete_files_sync([key])
         return key
 
     async def delete_files(self, keys: List[AnyStr], **kwargs) -> List[AnyStr]:
+        return self.delete_files_sync(keys, **kwargs)
+
+    def delete_files_sync(self, keys: List[AnyStr], **kwargs) -> List[AnyStr]:
         ops = build_batch_delete(self.bucket_name, keys)
         try:
             ret, info = self.bucket_mgr.batch(ops)
@@ -96,7 +114,10 @@ class PalQiniuDialect:
             raise DeleteFileFailed(eid=DeleteFileFailed.Eid.storage_delete_failed)
         return keys
 
-    async def head_file(self, key: str, **kwargs) -> Optional[StoredObject]:
+    async def head_file(self, key: AnyStr, **kwargs) -> StoredObject:
+        return self.head_file_sync(key, **kwargs)
+
+    def head_file_sync(self, key: str, **kwargs) -> Optional[StoredObject]:
         ret, _ = self.bucket_mgr.stat(self.bucket_name, key)
 
         if ret is None:

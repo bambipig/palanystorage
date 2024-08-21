@@ -25,6 +25,9 @@ class PalTxcosDialect:
         self.bucket_name = self.storage_config.bucket
 
     async def ready(self, **kwargs):
+        return self.ready_sync(**kwargs)
+
+    def ready_sync(self, **kwargs):
         pass
 
     def write_progress_maker(self, wrote_bytes: int, total_bytes: int, **kwargs) -> WriteProgressSchema:
@@ -36,10 +39,13 @@ class PalTxcosDialect:
             wrote_bytes=wrote_bytes, total_bytes=total_bytes
         )
 
-    async def write_file(self,
+    async def write_file(self, file_path: AnyStr, key: AnyStr, progress_callback: Optional[Callable] = None, **kwargs):
+        return self.write_file(file_path, key, progress_callback=progress_callback, **kwargs)
+
+    def write_file_sync(self,
                          file_path: str,
                          key: str,
-                         progress_callback: Union[Callable] = None, **kwargs):
+                         progress_callback: Optional[Callable] = None, **kwargs):
         """
         Write File
         :param file_path:
@@ -68,7 +74,10 @@ class PalTxcosDialect:
             key=key,
         )
 
-    async def read_file(self, key: str, **kwargs):
+    async def read_file(self, key: AnyStr, **kwargs):
+        return self.read_file_sync(key, **kwargs)
+
+    def read_file_sync(self, key: str, **kwargs):
         """
         Read File
         :param key:
@@ -77,7 +86,10 @@ class PalTxcosDialect:
         """
         pass
 
-    async def meta_file(self, key: str, expires: int, **kwargs) -> StoredObject:
+    async def meta_file(self, key: AnyStr, expires: int, **kwargs) -> StoredObject:
+        return self.meta_file_sync(key, expires, **kwargs)
+
+    def meta_file_sync(self, key: str, expires: int, **kwargs) -> StoredObject:
         """
         Meta file
         :param key:
@@ -104,11 +116,17 @@ class PalTxcosDialect:
             url=url,
         )
 
-    async def delete_file(self, key: str, **kwargs) -> str:
+    async def delete_file(self, key: AnyStr, **kwargs) -> str:
+        return self.delete_file_sync(key, **kwargs)
+
+    def delete_file_sync(self, key: str, **kwargs) -> str:
         res = self.client.delete_objects([key,])
         return res.get('Deleted', [])[0]
 
     async def delete_files(self, keys: List[AnyStr], **kwargs) -> List[AnyStr]:
+        return self.delete_files_sync(keys, **kwargs)
+
+    def delete_files_sync(self, keys: List[AnyStr], **kwargs) -> List[AnyStr]:
 
         res = self.client.delete_objects(
             Bucket=self.bucket_name,
@@ -116,7 +134,10 @@ class PalTxcosDialect:
         )
         return res.get('Deleted', [])
 
-    async def head_file(self, key: str, **kwargs) -> Optional[StoredObject]:
+    async def head_file(self, key: AnyStr, **kwargs) -> Optional[StoredObject]:
+        return self.head_file_sync(key, **kwargs)
+
+    def head_file_sync(self, key: str, **kwargs) -> Optional[StoredObject]:
         try:
             res = self.client.head_object(
                 Bucket=self.bucket_name,

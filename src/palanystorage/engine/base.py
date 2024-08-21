@@ -11,26 +11,48 @@ class Dialect:
     async def ready(self, *args, **kwargs):
         pass
 
+    def ready_sync(self, *args, **kwargs):
+        pass
+
     def write_progress_maker(self, *args, **kwargs) -> WriteProgressSchema:
         pass
 
     async def write_file(self, *args, **kwargs) -> StoredObject:
         pass
 
+    def write_file_sync(self, *args, **kwargs) -> StoredObject:
+        pass
+
     async def read_file(self, *args, **kwargs) -> StoredObject:
+        pass
+
+    def read_file_sync(self, *args, **kwargs) -> StoredObject:
         pass
 
     async def meta_file(self, *args, **kwargs) -> StoredObject:
         pass
 
+    def meta_file_sync(self, *args, **kwargs) -> StoredObject:
+        pass
+
     async def delete_file(self, *args, **kwargs) -> None:
+        pass
+
+    def delete_file_sync(self, *args, **kwargs) -> None:
         pass
 
     async def delete_files(self, *args, **kwargs) -> List[AnyStr]:
         pass
 
+    def delete_files_sync(self, *args, **kwargs) -> List[AnyStr]:
+        pass
+
     async def head_file(self, *args, **kwargs):
         pass
+
+    def head_file_sync(self, *args, **kwargs):
+        pass
+
 
 class Engine:
     """
@@ -54,7 +76,15 @@ class Engine:
         Ready state, can upload meta down
         :return:
         """
-        return await self.dialect.ready(**kwargs)
+        return self.ready_sync(**kwargs)
+
+    def ready_sync(self, **kwargs):
+        """
+        TODO
+        Ready state, can upload meta down
+        :return:
+        """
+        return self.dialect.ready_sync(**kwargs)
 
     def write_progress_maker(self, *args, **kwargs) -> WriteProgressSchema:
         return self.dialect.write_progress_maker(*args, **kwargs)
@@ -67,6 +97,14 @@ class Engine:
         return _progress_callback
 
     async def write_file(
+        self,
+        file_path: str,
+        key: str,
+        outside_progress_callback: Union[Callable] = None,
+        **kwargs) -> StoredObject:
+        return self.write_file_sync(file_path=file_path, key=key, outside_progress_callback=outside_progress_callback, **kwargs)
+
+    def write_file_sync(
         self,
         file_path: str,
         key: str,
@@ -87,9 +125,12 @@ class Engine:
         kwargs['file_path'] = file_path
         kwargs['key'] = key
         kwargs['progress_callback'] = self.progress_callback_wrapper(outside_progress_callback, extra=kwargs)
-        return await self.dialect.write_file(**kwargs)
+        return self.dialect.write_file_sync(**kwargs)
 
     async def read_file(self, key: str, **kwargs):
+        return self.read_file_sync(key=key, **kwargs)
+
+    def read_file_sync(self, key: str, **kwargs):
         """
         TODO
         :param key:
@@ -98,9 +139,12 @@ class Engine:
         :return:
         """
         kwargs['key'] = key
-        return await self.dialect.read_file(**kwargs)
+        return self.dialect.read_file_sync(**kwargs)
 
-    async def meta_file(self, key: str, expires: int, **kwargs) -> StoredObject:
+    async def meta_file(self, key: str, expires: int, **kwargs):
+        return self.meta_file_sync(key=key, expires=expires, **kwargs)
+
+    def meta_file_sync(self, key: str, expires: int, **kwargs) -> StoredObject:
         """
         TODO
         :param key:
@@ -111,16 +155,25 @@ class Engine:
 
         kwargs['key'] = key
         kwargs['expires'] = expires
-        return await self.dialect.meta_file(**kwargs)
+        return self.dialect.meta_file_sync(**kwargs)
 
     async def delete_file(self, key: str, **kwargs):
+        return self.delete_file_sync(key=key, **kwargs)
+
+    def delete_file_sync(self, key: str, **kwargs):
         kwargs['key'] = key
-        return await self.dialect.delete_file(**kwargs)
+        return self.dialect.delete_file_sync(**kwargs)
 
     async def delete_files(self, keys: List[AnyStr], **kwargs):
+        return self.delete_files_sync(keys=keys, **kwargs)
+
+    def delete_files_sync(self, keys: List[AnyStr], **kwargs):
         kwargs['keys'] = keys
-        return await self.dialect.delete_files(**kwargs)
+        return self.dialect.delete_files_sync(**kwargs)
 
     async def head_file(self, key: str, **kwargs):
+        return self.head_file_sync(key=key, **kwargs)
+
+    def head_file_sync(self, key: str, **kwargs):
         kwargs['key'] = key
-        return await self.dialect.head_file(**kwargs)
+        return self.dialect.head_file_sync(**kwargs)

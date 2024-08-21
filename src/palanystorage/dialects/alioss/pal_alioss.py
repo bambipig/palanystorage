@@ -18,6 +18,9 @@ class PalAliossDialect:
         )  # type: oss2.Bucket
 
     async def ready(self, **kwargs):
+        return self.ready_sync(**kwargs)
+
+    def ready_sync(self, **kwargs):
         pass
 
     def write_progress_maker(self, wrote_bytes: int, total_bytes: int, **kwargs) -> WriteProgressSchema:
@@ -33,6 +36,13 @@ class PalAliossDialect:
                          file_path: str,
                          key: str,
                          progress_callback: Union[Callable] = None, **kwargs):
+        return self.write_file_sync(file_path, key, progress_callback=progress_callback, **kwargs)
+
+    def write_file_sync(
+            self,
+             file_path: str,
+             key: str,
+             progress_callback: Optional[Callable] = None, **kwargs):
         """
         Write File
         :param file_path:
@@ -49,7 +59,10 @@ class PalAliossDialect:
             key=key,
         )
 
-    async def read_file(self, key: str, **kwargs):
+    async def read_file(self, key: AnyStr, **kwargs):
+        return self.read_file_sync(key, **kwargs)
+
+    def read_file_sync(self, key: str, **kwargs):
         """
         Read File
         :param key:
@@ -58,7 +71,10 @@ class PalAliossDialect:
         """
         pass
 
-    async def meta_file(self, key: str, expires: int, **kwargs) -> StoredObject:
+    async def meta_file(self, key: str, expires: int, **kwargs):
+        return self.meta_file_sync(key, expires, **kwargs)
+
+    def meta_file_sync(self, key: str, expires: int, **kwargs) -> StoredObject:
         """
         Meta file
         :param key:
@@ -74,15 +90,24 @@ class PalAliossDialect:
             url=url,
         )
 
-    async def delete_file(self, key: str, **kwargs) -> str:
+    async def delete_file(self, key: str, **kwargs) -> AnyStr:
+        return self.delete_file_sync(key, **kwargs)
+
+    def delete_file_sync(self, key: str, **kwargs) -> str:
         res = self.bucket.batch_delete_objects([key,])
         return res.deleted_keys[0]
 
-    async def delete_files(self, keys: [str], **kwargs) -> List[AnyStr]:
+    async def delete_files(self, keys: List[AnyStr], **kwargs) -> List[AnyStr]:
+        return self.delete_files_sync(keys, **kwargs)
+
+    def delete_files_sync(self, keys: List[AnyStr], **kwargs) -> List[AnyStr]:
         res = self.bucket.batch_delete_objects(keys)
         return res.deleted_keys
 
     async def head_file(self, key: str, **kwargs) -> Optional[StoredObject]:
+        return self.head_file_sync(key, **kwargs)
+
+    def head_file_sync(self, key: str, **kwargs) -> Optional[StoredObject]:
         try:
             res = self.bucket.head_object(key)
         except oss2.exceptions.NotFound as _:
