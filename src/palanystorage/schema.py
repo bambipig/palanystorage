@@ -8,7 +8,7 @@ class StorageConfigSchema:
     dialect: str
     driver: str
     root_path: str
-    max_can_use: str
+    max_can_use: int
     bucket: str = field(default_factory=str)
     access_key: str = field(default_factory=str)
     access_key_secret: str = field(default_factory=str)
