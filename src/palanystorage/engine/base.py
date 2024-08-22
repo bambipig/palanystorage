@@ -1,5 +1,5 @@
 from palanystorage.schema import StoredObject, StorageConfigSchema, WriteProgressSchema
-from typing import Union, Callable, List, AnyStr, TypeVar
+from typing import Union, Callable, List, AnyStr, Dict, Any
 from os import PathLike
 from palanystorage.log import logger
 
@@ -53,10 +53,10 @@ class Dialect:
     def head_file_sync(self, *args, **kwargs):
         pass
 
-    async def retrieve_upload_token(self):
+    async def retrieve_upload_token(self) -> Dict[str, Any]:
         pass
 
-    def retrieve_upload_token_sync(self, *args, **kwargs):
+    def retrieve_upload_token_sync(self, *args, **kwargs) -> Dict[str, Any]:
         pass
 
 
@@ -184,9 +184,10 @@ class Engine:
         kwargs['key'] = key
         return self.dialect.head_file_sync(**kwargs)
 
-    async def retrieve_upload_token(self, key: AnyStr, **kwargs):
+    async def retrieve_upload_token(self, key: AnyStr, **kwargs) -> Dict[AnyStr, Any]:
         return self.retrieve_upload_token_sync(key=key, **kwargs)
 
-    def retrieve_upload_token_sync(self, key: str, **kwargs):
+    def retrieve_upload_token_sync(self, key: str, expires: int, **kwargs) -> Dict[AnyStr, Any]:
         kwargs['key'] = key
+        kwargs['expires'] = expires
         return self.dialect.retrieve_upload_token_sync(**kwargs)

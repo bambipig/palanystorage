@@ -31,10 +31,17 @@ for line in iter(input, _line):
     # print(f'line: {line}')
     dict_str += line
 
+config_dict = eval(dict_str)
+config_schema = StorageConfigSchema(**config_dict)
+
 
 @pytest.fixture
 def config(request):
-    config_dict = eval(dict_str)
-    config_schema = StorageConfigSchema(**config_dict)
     return config_schema
+
+
+@pytest.fixture
+def engine(request):
+    my_engine = create_engine_sync(dialect_name=config_schema.dialect, driver=config_schema.driver, storage_config=config_schema)
+    return my_engine
 
