@@ -21,7 +21,7 @@ dependencies = [
     'loguru==0.6.0',
     'typer==0.9.0',
     'anyconfig==0.13.0',
-    'dataclasses==0.8',
+
 ]
 authors = [
     {name = "Tiny Twist", email = "tiny.mahua@gmail.com"},
@@ -35,3 +35,8 @@ payanystorage = "palanystorage.cli.main:app"
 
 [project.urls]
 Home = "https://github.com/bambipig/palanystorage"
+
+[project.optional-dependencies]
+pylte36 = [
+    'dataclasses==0.8',
+]
